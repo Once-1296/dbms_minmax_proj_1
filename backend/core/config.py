@@ -5,8 +5,6 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 1440
-    SUPABASE_DB_PASSWORD: str
-    SUPABASE_REF : str
 
     class Config:
         env_file = ".env"
