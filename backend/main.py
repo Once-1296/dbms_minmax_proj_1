@@ -12,6 +12,7 @@ app = FastAPI(title="TPQA Management System API")
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://dbms-minmax-proj-1.vercel.app",
 ]
 
 app.add_middleware(
