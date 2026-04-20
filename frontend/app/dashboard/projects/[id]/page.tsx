@@ -31,7 +31,10 @@ export default function ProjectDetail() {
   if (loading) return <div className="p-12 text-center text-slate-500">Loading project...</div>;
   if (!project) return <div className="p-12 text-center text-slate-500">Project not found.</div>;
 
-  const currentStepInfo = workflowSteps.find(s => s.id === project.Current_Status);
+  const currentIndex = workflowSteps.findIndex(s => s.id === project.Current_Status);
+  const currentStepInfo = workflowSteps[currentIndex];
+  const nextStepInfo = workflowSteps[currentIndex + 1];
+  const isClosed = project.Current_Status === 'CLOSED';
 
   const handleUpdateStatus = (newStatus: ProjectStatus) => {
     // Update local state optimistically, the API call is handled by WorkflowContainer
@@ -50,9 +53,22 @@ export default function ProjectDetail() {
           </button>
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{project.Project_Number}</h1>
-            <span className="px-3 py-1 bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300 rounded-full text-xs font-semibold">
-              Step {currentStepInfo?.number || '?'}: {currentStepInfo?.label}
-            </span>
+            {isClosed ? (
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 rounded-full text-xs font-semibold uppercase tracking-wider">
+                Completed
+              </span>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 rounded-full text-xs font-semibold inline-flex items-center gap-1">
+                  Obtained: Step {currentStepInfo?.number || '?'}: {currentStepInfo?.label}
+                </span>
+                {nextStepInfo && (
+                  <span className="px-3 py-1 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-full text-xs font-semibold inline-flex items-center gap-1 animate-pulse">
+                    Pending: Step {nextStepInfo?.number || '?'}: {nextStepInfo?.label}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <p className="text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">{project.Project_Title}</p>
         </div>

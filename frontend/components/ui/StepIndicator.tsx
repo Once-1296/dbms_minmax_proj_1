@@ -21,9 +21,9 @@ export function StepIndicator({ currentStatus }: { currentStatus: ProjectStatus 
     <div className="w-full py-6 overflow-x-auto no-scrollbar">
       <div className="flex justify-between items-center min-w-[800px]">
         {workflowSteps.map((step, index) => {
-          const isCompleted = index < currentIndex || isClosed;
-          const isCurrent = index === currentIndex && !isClosed;
-          const isFuture = index > currentIndex;
+          const isCompleted = index <= currentIndex || isClosed;
+          const isCurrent = index === currentIndex + 1 && !isClosed;
+          const isFuture = index > currentIndex + 1;
           
           return (
             <div key={step.id} className="relative flex flex-col items-center flex-1">
@@ -31,7 +31,7 @@ export function StepIndicator({ currentStatus }: { currentStatus: ProjectStatus 
               {index !== 0 && (
                 <div 
                   className={`absolute top-4 left-0 w-full h-[2px] -z-10 -translate-x-1/2 transition-colors duration-500 ${
-                    isCompleted ? 'bg-emerald-500' : isCurrent ? 'bg-brand-500' : 'bg-slate-200 dark:bg-slate-700'
+                    isCompleted ? 'bg-emerald-500' : isCurrent ? 'bg-red-500' : 'bg-slate-200 dark:bg-slate-700'
                   }`} 
                 />
               )}
@@ -42,7 +42,7 @@ export function StepIndicator({ currentStatus }: { currentStatus: ProjectStatus 
                   isCompleted 
                     ? 'border-emerald-500 bg-emerald-500 text-white' 
                     : isCurrent 
-                      ? 'border-brand-500 bg-brand-500 text-white animate-pulse' 
+                      ? 'border-red-500 bg-red-500 text-white animate-pulse' 
                       : 'border-slate-300 dark:border-slate-600 text-slate-400 bg-white dark:bg-slate-900'
                 }`}
               >
@@ -54,7 +54,7 @@ export function StepIndicator({ currentStatus }: { currentStatus: ProjectStatus 
                 isCompleted 
                   ? 'text-emerald-600 dark:text-emerald-400' 
                   : isCurrent 
-                    ? 'text-brand-700 dark:text-brand-300 font-semibold' 
+                    ? 'text-red-600 dark:text-red-400 font-semibold' 
                     : 'text-slate-400 dark:text-slate-500'
               }`}>
                 {step.label}
@@ -65,7 +65,7 @@ export function StepIndicator({ currentStatus }: { currentStatus: ProjectStatus 
                 <span className="text-[9px] text-emerald-500 dark:text-emerald-400 mt-0.5">Done</span>
               )}
               {isCurrent && (
-                <span className="text-[9px] text-brand-500 dark:text-brand-400 mt-0.5">In Progress</span>
+                <span className="text-[9px] text-red-500 dark:text-red-400 mt-0.5">Pending</span>
               )}
             </div>
           );
