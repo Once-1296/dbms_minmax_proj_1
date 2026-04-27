@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from models.tables import Project, Department, Role
+from models.tables import Project, Department, Role, Receipt
 from schemas.project import (
     ProjectCreate, ProjectResponse, Step2FacultyResponse, Step3AgencyAcceptance,
     Step4DirectorApproval, Step5Proforma, Step6TaxReceipt, Step7Completion,
@@ -40,13 +40,13 @@ def get_employees(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return [{"Employee_ID": e.Employee_ID, "Full_Name": e.Full_Name, "Designation": e.Designation} for e in employees]
 
 @router.get("/projects", response_model=list[ProjectResponse])
-def get_projects(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user = current_user["user"]
     user_type = current_user["user_type"]
-    if user_type == "COLLEGE_OFFICIAL":
-        projects = db.query(Project).all()
-    else:
-        projects = db.query(Project).filter(Project.Client_ID == user.Client_ID).all()
+    query = db.query(Project)
+    if user_type != "COLLEGE_OFFICIAL":
+        query = query.filter(Project.Client_ID == user.Client_ID)
+    projects = query.order_by(Project.Project_ID.desc()).offset(skip).limit(limit).all()
     return projects
 
 @router.get("/projects/{project_id}", response_model=ProjectResponse)
@@ -55,6 +55,23 @@ def get_project(project_id: int, db: Session = Depends(get_db), current_user: di
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     return project
+
+@router.get("/receipts")
+def get_receipts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    receipts = db.query(Receipt).order_by(Receipt.Receipt_ID.desc()).offset(skip).limit(limit).all()
+    return [
+        {
+            "Receipt_ID": r.Receipt_ID,
+            "Invoice_ID": r.Invoice_ID,
+            "Voucher_Number": r.Voucher_Number,
+            "Receipt_Date": str(r.Receipt_Date) if r.Receipt_Date else None,
+            "Total_Received": float(r.Total_Received) if r.Total_Received else 0,
+            "TDS_Deducted": float(r.TDS_Deducted) if r.TDS_Deducted else 0,
+            "Trans_Mode": r.Trans_Mode,
+            "Bank_Trans_Ref": r.Bank_Trans_Ref,
+        }
+        for r in receipts
+    ]
 
 @router.post("/request")
 def step1_request(project_data: ProjectCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):

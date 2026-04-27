@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 1440
     SUPABASE_DB_PASSWORD: str
     SUPABASE_REF: str
+    LOCAL_ADMIN_MODE: str = "false"
 
     class Config:
         env_file = ".env"

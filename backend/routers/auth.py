@@ -113,6 +113,10 @@ def login_client(request: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/login/admin", response_model=dict)
 def login_admin(request: LoginRequest):
+    from core.config import settings
+    if settings.LOCAL_ADMIN_MODE.lower() != "true":
+        raise HTTPException(status_code=403, detail="Administrative access is disabled in this deployment")
+    
     if request.email != "admin@internal.tpqa" or request.password != "123976":
         raise HTTPException(status_code=401, detail="Incorrect admin credentials")
     

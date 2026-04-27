@@ -31,6 +31,9 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
 def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    from core.config import settings
+    if settings.LOCAL_ADMIN_MODE.lower() != "true":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Administrative access is disabled in this deployment")
     try:
         payload = decode_access_token(credentials.credentials)
         if payload.get("user_type") != "ADMIN":

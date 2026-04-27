@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useRouter, usePathname } from "next/navigation";
-import { Building2, FileText, LayoutDashboard, LogOut, Receipt, User } from "lucide-react";
+import { Building2, FileText, Home, Info, LayoutDashboard, LogOut, Receipt, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
@@ -13,7 +13,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   // Wait for auth to load
   if (loading) {
@@ -38,8 +37,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = userType === 'COLLEGE_OFFICIAL' 
     ? [
         { name: 'Dashboard', href: '/dashboard/college', icon: LayoutDashboard },
-        { name: 'Projects', action: () => setActiveModal('Projects'), icon: FileText },
-        { name: 'Receipts & Dist.', action: () => setActiveModal('Receipts'), icon: Receipt },
+        { name: 'Projects', href: '/dashboard/projects', icon: FileText },
+        { name: 'Receipts & Dist.', href: '/dashboard/receipts', icon: Receipt },
       ]
     : userType === 'ADMIN'
       ? [
@@ -47,8 +46,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ]
       : [
         { name: 'Dashboard', href: '/dashboard/organization', icon: LayoutDashboard },
-        { name: 'My Requests', action: () => setActiveModal('Requests'), icon: FileText },
+        { name: 'My Requests', href: '/dashboard/requests', icon: FileText },
       ];
+
+  // Static site pages accessible from dashboard
+  const siteLinks = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'About', href: '/about', icon: Info },
+  ];
 
   const NameDisplay = userType === 'COLLEGE_OFFICIAL' 
     ? user?.Full_Name || 'Faculty'
@@ -67,24 +72,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
-            if ('action' in item && item.action) {
-              return (
-                <button 
-                  key={item.name} 
-                  onClick={item.action}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-slate-300 hover:bg-slate-800 hover:text-white`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
-                </button>
-              );
-            }
-
-            const isActive = item.href ? pathname === item.href : false;
+            const isActive = pathname === item.href || (item.href !== '/dashboard/college' && item.href !== '/dashboard/organization' && item.href !== '/dashboard/admin' && pathname.startsWith(item.href));
             return (
               <Link 
                 key={item.name} 
-                href={item.href!}
+                href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                   isActive 
                     ? 'bg-brand-600 text-white' 
@@ -94,8 +86,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.name}</span>
               </Link>
-            )
+            );
           })}
+
+          {/* Divider */}
+          <div className="!mt-4 !mb-2 border-t border-slate-800" />
+          <p className="px-3 text-[11px] uppercase tracking-widest text-slate-500 font-semibold !mb-1">Site</p>
+
+          {siteLinks.map((item) => (
+            <Link 
+              key={item.name} 
+              href={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="font-medium">{item.name}</span>
+            </Link>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-slate-800">
@@ -171,40 +178,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)} 
       />
-
-      {activeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 scale-100 transition-all">
-            <div className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-brand-600 dark:text-brand-400">
-                   {activeModal === 'Receipts' ? <Receipt className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {activeModal === 'Receipts' ? 'Receipts & Distribution' : activeModal === 'Projects' ? 'Project Management' : 'My Requests'}
-                  </h3>
-                </div>
-              </div>
-              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                {activeModal === 'Receipts' 
-                  ? "View all tax invoices, payment receipts, and revenue distributions for completed projects. This functionality is being migrated to a dedicated view."
-                  : activeModal === 'Projects'
-                  ? "A dedicated view for full project management, filtering, and advanced search is currently under development. Please use the dashboard view for now."
-                  : "All your consultancy requests are listed on the main dashboard. A specialized view for managing drafts and historical requests is coming soon."}
-              </p>
-              <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  onClick={() => setActiveModal(null)}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
