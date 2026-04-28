@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Building2 } from "lucide-react";
+import { Building2, House } from "lucide-react";
 import Image from "next/image";
 
 export default function LoginLanding() {
+  const showAdminAccess = process.env.NEXT_PUBLIC_LOCAL_ADMIN_MODE === "true";
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden p-8">
       {/* Background Image */}
@@ -15,6 +17,14 @@ export default function LoginLanding() {
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/55 z-[1]" />
+
+      <Link
+        href="/"
+        className="absolute top-6 right-6 z-20 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/20"
+      >
+        <House className="h-4 w-4" />
+        Home
+      </Link>
 
       {/* Content */}
       <div className="relative z-10 max-w-2xl w-full text-center">
@@ -73,12 +83,14 @@ export default function LoginLanding() {
               Sign up
             </Link>
           </p>
-          <div className="pt-6 border-t border-white/10">
-            <Link href="/admin" className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center justify-center gap-1">
-              <Building2 className="w-3 h-3" />
-              Administrative Access
-            </Link>
-          </div>
+          {showAdminAccess ? (
+            <div className="pt-6 border-t border-white/10">
+              <Link href="/admin" className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center justify-center gap-1">
+                <Building2 className="w-3 h-3" />
+                Administrative Access
+              </Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

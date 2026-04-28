@@ -31,14 +31,14 @@ export default function AboutPage() {
         </nav>
 
         {/* Main Content Card */}
-        <div className="glass-panel rounded-2xl p-10 md:p-14 shadow-2xl">
+        <div className="glass-panel rounded-2xl p-10 md:p-14 shadow-2xl text-slate-700 dark:text-slate-200">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
             About VJTI
           </h1>
 
-          <div className="space-y-5 text-slate-200 leading-relaxed text-base md:text-lg">
+          <div className="space-y-5 leading-relaxed text-base md:text-lg">
             <p>
-              <strong className="text-white">Veermata Jijabai Technological Institute (VJTI)</strong> is an
+              <strong className="text-slate-900 dark:text-white">Veermata Jijabai Technological Institute (VJTI)</strong> is an
               autonomous engineering institute affiliated with the University of Mumbai. Founded in 1887 as the
               Victoria Jubilee Technical Institute, it is one of the oldest and most distinguished technical
               institutes in Asia.
@@ -50,7 +50,7 @@ export default function AboutPage() {
               NBA accreditation — a testament to its academic rigour.
             </p>
             <p>
-              VJTI&apos;s <strong className="text-white">Academic Consultancy &amp; Third-Party Quality Audit (TPQA)</strong> cell
+              VJTI&apos;s <strong className="text-slate-900 dark:text-white">Academic Consultancy &amp; Third-Party Quality Audit (TPQA)</strong> cell
               facilitates professional consultancy services where faculty expertise is made available to external
               organizations for quality audits, testing, structural assessments, and technical evaluations. This
               platform digitizes the full 9-step consultancy workflow — from initial client request through
